@@ -111,7 +111,6 @@ export default class Play extends window.Phaser.State {
     // this.game.add.tileSprite(30, 45, 64, 64, 'sprintIcon');
     this.sprintIcon = this.game.add.sprite(30, 45, 'sprintIcon');
 
-
     // create an input controller to listen for keydown events
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
@@ -173,7 +172,6 @@ export default class Play extends window.Phaser.State {
     window.addEventListener("beforeunload", () => {
       this.socket.emit('disconnect');
     });
-
   }
 
   // update is a method that every Phaser play state has.
@@ -190,11 +188,11 @@ export default class Play extends window.Phaser.State {
         if (
           this.pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1 || this.pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > 0.1 ||
           this.pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > 0.1 || this.pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) < -0.1
-          ) {
+        ) {
           this.speed = 2;
-      } else {
+        } else {
         this.speed = 0;
-      }
+        }
 
         // // set direction based on what dpad/keys are down
         if (this.pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -0.1 && this.pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > 0.1) {
@@ -234,7 +232,6 @@ export default class Play extends window.Phaser.State {
               context.game.time.events.add(Phaser.Timer.SECOND * 2, function() {
                 context.sprintCooldown = false;
                 context.powerUpSfx.play();
-
               });
             });
           }
@@ -246,66 +243,66 @@ export default class Play extends window.Phaser.State {
         }
       } else {
 
-      // set speed if one of the arrow keys is down
-      if (
-        this.cursors.right.isDown || this.cursors.left.isDown ||
-        this.cursors.up.isDown || this.cursors.down.isDown
+        // set speed if one of the arrow keys is down
+        if (
+          this.cursors.right.isDown || this.cursors.left.isDown ||
+          this.cursors.up.isDown || this.cursors.down.isDown
         ) {
-        this.speed = 2;
-    } else {
-      this.speed = 0;
-    }
+          this.speed = 2;
+        } else {
+          this.speed = 0;
+        }
 
-      // set direction based on what keys are down
-      if (this.cursors.right.isDown && this.cursors.up.isDown) {
-        this.newDirection = 'up-right';
-      } else if (this.cursors.right.isDown && this.cursors.down.isDown) {
-        this.newDirection = 'down-right';
-      } else if (this.cursors.left.isDown && this.cursors.up.isDown) {
-        this.newDirection = 'up-left';
-      } else if (this.cursors.left.isDown && this.cursors.down.isDown) {
-        this.newDirection = 'down-left';
-      } else if (this.cursors.right.isDown) {
-        this.newDirection = 'right';
-      } else if (this.cursors.left.isDown) {
-        this.newDirection = 'left';
-      } else if (this.cursors.up.isDown) {
-        this.newDirection = 'up';
-      } else if (this.cursors.down.isDown) {
-        this.newDirection = 'down';
+        // set direction based on what keys are down
+        if (this.cursors.right.isDown && this.cursors.up.isDown) {
+          this.newDirection = 'up-right';
+        } else if (this.cursors.right.isDown && this.cursors.down.isDown) {
+          this.newDirection = 'down-right';
+        } else if (this.cursors.left.isDown && this.cursors.up.isDown) {
+          this.newDirection = 'up-left';
+        } else if (this.cursors.left.isDown && this.cursors.down.isDown) {
+          this.newDirection = 'down-left';
+        } else if (this.cursors.right.isDown) {
+          this.newDirection = 'right';
+        } else if (this.cursors.left.isDown) {
+          this.newDirection = 'left';
+        } else if (this.cursors.up.isDown) {
+          this.newDirection = 'up';
+        } else if (this.cursors.down.isDown) {
+          this.newDirection = 'down';
+        }
+
+
+        if (!this.sprintOn) { // proceeds only if sprint is off
+          // console.log('sprint is OFF');
+          // console.log('speed without sprint is:', this.speed);
+          if (this.sprintKey.isDown && !this.sprintCooldown) { // proceeds only if the player hits the space bar
+            // console.log('turning sprint on');
+
+            this.speed *= 3;
+            this.sprintOn = true;
+            this.sprintIcon.alpha = 0.15;
+            var context = this;
+
+            this.game.time.events.add(Phaser.Timer.SECOND * 3, function() { //these are buidling up
+              // console.log('3 seconds have elasped. this.speed =', context.speed);
+              context.sprintOn = false;
+              context.sprintCooldown = true;
+              context.game.add.tween(context.sprintIcon).to( { alpha: 1 }, 2000, Phaser.Easing.Linear.None, true);
+              context.game.time.events.add(Phaser.Timer.SECOND * 2, function() {
+                context.sprintCooldown = false;
+                context.powerUpSfx.play();
+              });
+            });
+          }
+        } else { // sprint is on
+          // console.log('sprint is ON');
+          this.sprintIcon.alpha = 0.15;
+          this.speed *= 3;
+          // console.log('speed with sprint on is:', this.speed);
+        }
       }
-
-
-    if (!this.sprintOn) { // proceeds only if sprint is off
-        // console.log('sprint is OFF');
-        // console.log('speed without sprint is:', this.speed);
-      if (this.sprintKey.isDown && !this.sprintCooldown) { // proceeds only if the player hits the space bar
-        // console.log('turning sprint on');
-
-        this.speed *= 3;
-        this.sprintOn = true;
-        this.sprintIcon.alpha = 0.15;
-        var context = this;
-
-        this.game.time.events.add(Phaser.Timer.SECOND * 3, function() { //these are buidling up
-          // console.log('3 seconds have elasped. this.speed =', context.speed);
-          context.sprintOn = false;
-          context.sprintCooldown = true;
-          context.game.add.tween(context.sprintIcon).to( { alpha: 1 }, 2000, Phaser.Easing.Linear.None, true);
-          context.game.time.events.add(Phaser.Timer.SECOND * 2, function() {
-            context.sprintCooldown = false;
-            context.powerUpSfx.play();
-
-          });
-        });
-      }
-    } else { // sprint is on
-      // console.log('sprint is ON');
-      this.sprintIcon.alpha = 0.15;
-      this.speed *= 3;
-      // console.log('speed with sprint on is:', this.speed);
-    }
-  }
+      
       // With this.updateDelay incrementing every time
       // update is called, the if statement below is only
       // true once every ten times. It is on these times

@@ -68,10 +68,11 @@ app.use('/', routes);
 io.on('connection', client => {
   //When a new player connects to the game, we check to see if there are more than two players.
   client.on('new player', function(data) {
-    //If there are more two players already, clear playerInstance.players array in Players.js
-    //Else, emit a 'new enamy' event and send the existing player back to the client that just connected.
+    //If there are more than two players already, clear playerInstance.players array in Players.js
+    //Else, emit a 'new enemy' event and send the existing player back to the client that just connected.
     if (playerInstance.players.length >= 2) {
       playerInstance.clearPlayers();
+      // this.emit('two players', true);
     } else if (playerInstance.players.length === 1) {
       this.emit('new enemy', playerInstance.players[0]);
     }
